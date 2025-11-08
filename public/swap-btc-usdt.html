@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC-USDT Swap Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #0b0e11;
+            color: #ffffff;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #1a1d23;
+            padding: 15px 20px;
+            border-bottom: 1px solid #2a2e39;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .pair-info {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .pair-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .pair-type {
+            font-size: 12px;
+            color: #848e9c;
+            background-color: #2b3139;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .current-price {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0ecb81;
+        }
+
+        .price-change {
+            font-size: 12px;
+            color: #0ecb81;
+        }
+
+        .price-change.negative {
+            color: #f6465d;
+        }
+
+        #tradingview_chart {
+            flex: 1;
+            width: 100%;
+            position: relative;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #848e9c;
+        }
+
+        .footer {
+            background-color: #1a1d23;
+            padding: 10px 20px;
+            border-top: 1px solid #2a2e39;
+            text-align: center;
+            font-size: 12px;
+            color: #848e9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="pair-info">
+                    <span class="pair-name">BTC/USDT</span>
+                    <span class="pair-type">Perpetual</span>
+                </div>
+                <div class="price-info">
+                    <span class="current-price" id="currentPrice">--</span>
+                    <span class="price-change" id="priceChange">--</span>
+                </div>
+            </div>
+        </div>
+        <div id="tradingview_chart">
+            <div class="loading" id="loadingIndicator">Loading chart...</div>
+        </div>
+        <div class="footer">
+            Static TradingView Chart for BTC-USDT Swap | Note: This file must be served from a web server to fetch live data from Binance API
+        </div>
+    </div>
+
+    <!-- TradingView Charting Library -->
+    <script type="text/javascript" src="./tradingView/charting_library/charting_library.standalone.js"></script>
+    
+    <script type="text/javascript">
+        // Configuration for datafeed - Direct Binance API (works when hosted on a server)
+        const API_BASE_URL = 'https://api.binance.com/api/v3';
+        
+        // Simple datafeed implementation for Binance
+        const Datafeed = {
+            onReady: (callback) => {
+                setTimeout(() => callback({
+                    supported_resolutions: ['1', '3', '5', '15', '30', '60', '120', '240', '1D', '1W'],
+                    supports_marks: false,
+                    supports_timescale_marks: false,
+                    supports_time: true,
+                }), 0);
+            },
+
+            searchSymbols: (userInput, exchange, symbolType, onResultReadyCallback) => {
+                // Not implemented for static page
+                onResultReadyCallback([]);
+            },
+
+            resolveSymbol: (symbolName, onSymbolResolvedCallback, onResolveErrorCallback) => {
+                const symbol_stub = {
+                    name: 'BTCUSDT',
+                    description: 'Bitcoin / TetherUS',
+                    type: 'crypto',
+                    session: '24x7',
+                    timezone: 'Etc/UTC',
+                    ticker: 'BTCUSDT',
+                    exchange: 'Binance',
+                    minmov: 1,
+                    pricescale: 100,
+                    has_intraday: true,
+                    has_daily: true,
+                    has_weekly_and_monthly: true,
+                    supported_resolutions: ['1', '3', '5', '15', '30', '60', '120', '240', '1D', '1W'],
+                    volume_precision: 3,
+                    data_status: 'streaming',
+                };
+
+                setTimeout(() => onSymbolResolvedCallback(symbol_stub), 0);
+            },
+
+            getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
+                try {
+                    const { from, to, firstDataRequest } = periodParams;
+                    
+                    // Convert resolution to Binance interval
+                    const intervalMap = {
+                        '1': '1m',
+                        '3': '3m',
+                        '5': '5m',
+                        '15': '15m',
+                        '30': '30m',
+                        '60': '1h',
+                        '120': '2h',
+                        '240': '4h',
+                        '1D': '1d',
+                        '1W': '1w',
+                    };
+                    
+                    const interval = intervalMap[resolution] || '15m';
+                    const url = `${API_BASE_URL}/klines?symbol=BTCUSDT&interval=${interval}&startTime=${from * 1000}&endTime=${to * 1000}&limit=1000`;
+                    
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    if (!data || data.length === 0) {
+                        onHistoryCallback([], { noData: true });
+                        return;
+                    }
+
+                    const bars = data.map(kline => ({
+                        time: kline[0],
+                        open: parseFloat(kline[1]),
+                        high: parseFloat(kline[2]),
+                        low: parseFloat(kline[3]),
+                        close: parseFloat(kline[4]),
+                        volume: parseFloat(kline[5])
+                    }));
+
+                    // Update current price display
+                    if (bars.length > 0) {
+                        const lastBar = bars[bars.length - 1];
+                        updatePriceDisplay(lastBar.close, bars[0].close);
+                    }
+
+                    onHistoryCallback(bars, { noData: false });
+                } catch (error) {
+                    console.error('Error fetching bars:', error);
+                    // If direct API fails, we can use the error callback
+                    onErrorCallback(error);
+                }
+            },
+
+            subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
+                console.log('Subscribe bars:', subscriberUID);
+                
+                // Implement WebSocket connection to Binance for real-time updates
+                const intervalMap = {
+                    '1': '1m',
+                    '3': '3m',
+                    '5': '5m',
+                    '15': '15m',
+                    '30': '30m',
+                    '60': '1h',
+                    '120': '2h',
+                    '240': '4h',
+                    '1D': '1d',
+                    '1W': '1w',
+                };
+                
+                const interval = intervalMap[resolution] || '15m';
+                const ws = new WebSocket(`wss://stream.binance.com:9443/ws/btcusdt@kline_${interval}`);
+                
+                ws.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    const kline = message.k;
+                    
+                    if (kline) {
+                        const bar = {
+                            time: kline.t,
+                            open: parseFloat(kline.o),
+                            high: parseFloat(kline.h),
+                            low: parseFloat(kline.l),
+                            close: parseFloat(kline.c),
+                            volume: parseFloat(kline.v)
+                        };
+                        
+                        onRealtimeCallback(bar);
+                        updatePriceDisplay(bar.close, bar.open);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+                
+                // Store WebSocket for cleanup
+                window._wsConnection = ws;
+            },
+
+            unsubscribeBars: (subscriberUID) => {
+                console.log('Unsubscribe bars:', subscriberUID);
+                if (window._wsConnection) {
+                    window._wsConnection.close();
+                    window._wsConnection = null;
+                }
+            },
+        };
+
+        // Initialize TradingView widget
+        function initTradingView() {
+            const widget = new TradingView.widget({
+                symbol: 'BTCUSDT',
+                interval: '15',
+                container: 'tradingview_chart',
+                datafeed: Datafeed,
+                library_path: './tradingView/charting_library/',
+                locale: 'en',
+                disabled_features: [
+                    'use_localstorage_for_settings',
+                    'volume_force_overlay',
+                    'header_symbol_search',
+                    'header_compare',
+                    'display_market_status'
+                ],
+                enabled_features: [
+                    'study_templates',
+                    'side_toolbar_in_fullscreen_mode'
+                ],
+                fullscreen: false,
+                autosize: true,
+                theme: 'dark',
+                style: '1',
+                toolbar_bg: '#1a1d23',
+                overrides: {
+                    'paneProperties.background': '#0b0e11',
+                    'paneProperties.backgroundType': 'solid',
+                    'mainSeriesProperties.candleStyle.upColor': '#0ecb81',
+                    'mainSeriesProperties.candleStyle.downColor': '#f6465d',
+                    'mainSeriesProperties.candleStyle.borderUpColor': '#0ecb81',
+                    'mainSeriesProperties.candleStyle.borderDownColor': '#f6465d',
+                    'mainSeriesProperties.candleStyle.wickUpColor': '#0ecb81',
+                    'mainSeriesProperties.candleStyle.wickDownColor': '#f6465d',
+                },
+                studies_overrides: {
+                    'volume.volume.color.0': '#f6465d',
+                    'volume.volume.color.1': '#0ecb81',
+                }
+            });
+
+            widget.onChartReady(() => {
+                console.log('Chart is ready');
+                document.getElementById('loadingIndicator').style.display = 'none';
+            });
+
+            return widget;
+        }
+
+        function updatePriceDisplay(currentPrice, openPrice) {
+            const priceElement = document.getElementById('currentPrice');
+            const changeElement = document.getElementById('priceChange');
+            
+            if (priceElement && changeElement) {
+                priceElement.textContent = currentPrice.toFixed(2);
+                
+                const change = currentPrice - openPrice;
+                const changePercent = ((change / openPrice) * 100).toFixed(2);
+                
+                if (change >= 0) {
+                    priceElement.style.color = '#0ecb81';
+                    changeElement.style.color = '#0ecb81';
+                    changeElement.className = 'price-change';
+                    changeElement.textContent = `+${change.toFixed(2)} (+${changePercent}%)`;
+                } else {
+                    priceElement.style.color = '#f6465d';
+                    changeElement.style.color = '#f6465d';
+                    changeElement.className = 'price-change negative';
+                    changeElement.textContent = `${change.toFixed(2)} (${changePercent}%)`;
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTradingView);
+        } else {
+            initTradingView();
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window._wsConnection) {
+                window._wsConnection.close();
+            }
+        });
+    </script>
+</body>
+</html>
