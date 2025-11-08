@@ -1,21 +1,35 @@
 # Static BTC-USDT Swap Trading View
 
-This is a standalone static HTML file that displays a TradingView chart for BTC-USDT perpetual swap trading.
+This is a standalone static HTML file that displays a complete trading interface for BTC-USDT perpetual swap trading.
 
 ## File
 
-- `swap-btc-usdt.html` - Static HTML file with embedded TradingView chart
+- `swap-btc-usdt.html` - Static HTML file with full trading interface
 
 ## Features
 
+### Chart & Market Data
 - ✅ TradingView chart integration using local library files
 - ✅ Real-time price updates via Binance WebSocket
 - ✅ Historical candlestick data from Binance API
 - ✅ Multiple timeframes (1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 1D, 1W)
-- ✅ Dark theme matching crypto exchange UI
-- ✅ Live price display in header
 - ✅ Volume indicator
 - ✅ Full TradingView drawing tools and indicators
+
+### Trading Interface
+- ✅ **Order Book** - Real-time bid/ask orders with depth visualization
+- ✅ **Recent Trades** - Live trade feed with buy/sell indicators
+- ✅ **Trade Panel** - Order placement form (Long/Short)
+- ✅ **Order Lists** with multiple tabs:
+  - Positions - Active positions list
+  - Open Orders - Pending orders
+  - Order History - Historical orders
+  - Trade History - Executed trades
+  - Position History - Closed positions
+  - Transaction History - Fund movements
+- ✅ Dark theme matching crypto exchange UI
+- ✅ Live price display in header
+- ✅ Professional trading layout with grid system
 
 ## Requirements
 
@@ -78,7 +92,17 @@ public/
 ## Data Sources
 
 - **Historical Data:** Binance REST API (`https://api.binance.com/api/v3/klines`)
-- **Real-time Data:** Binance WebSocket (`wss://stream.binance.com:9443/ws/btcusdt@kline_*`)
+- **Real-time Kline Data:** Binance WebSocket (`wss://stream.binance.com:9443/ws/btcusdt@kline_*`)
+- **Order Book:** Binance WebSocket (`wss://stream.binance.com:9443/ws/btcusdt@depth20@100ms`)
+- **Recent Trades:** Binance WebSocket (`wss://stream.binance.com:9443/ws/btcusdt@trade`)
+
+## Layout
+
+The trading interface uses a professional grid layout with:
+- **Left Sidebar:** Order Book + Recent Trades
+- **Center:** TradingView Chart (full height)
+- **Right Sidebar:** Trade Panel (Long/Short order placement)
+- **Bottom Panel:** Order Lists with 6 tabs
 
 ## Notes
 
@@ -86,7 +110,8 @@ public/
 - All JavaScript and TradingView library files are loaded from the local `tradingView` folder
 - Direct API calls to Binance may be blocked by CORS when opening the file directly (file://)
 - For best results, always serve through HTTP/HTTPS server
-- The chart will display live BTC-USDT price data when properly served
+- The interface displays live BTC-USDT market data when properly served
+- Order placement is simulated (no actual trading occurs)
 
 ## Customization
 

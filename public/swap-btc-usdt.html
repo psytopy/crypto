@@ -19,22 +19,25 @@
             -moz-osx-font-smoothing: grayscale;
             background-color: #0b0e11;
             color: #ffffff;
+            overflow: hidden;
         }
 
-        .container {
+        .main-container {
             width: 100%;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* Header Styles */
         .header {
             background-color: #1a1d23;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-bottom: 1px solid #2a2e39;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 60px;
         }
 
         .header-left {
@@ -50,12 +53,12 @@
         }
 
         .pair-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .pair-type {
-            font-size: 12px;
+            font-size: 11px;
             color: #848e9c;
             background-color: #2b3139;
             padding: 2px 6px;
@@ -68,13 +71,13 @@
         }
 
         .current-price {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
             color: #0ecb81;
         }
 
         .price-change {
-            font-size: 12px;
+            font-size: 11px;
             color: #0ecb81;
         }
 
@@ -82,33 +85,376 @@
             color: #f6465d;
         }
 
-        #tradingview_chart {
+        /* Main Trading Layout */
+        .trading-layout {
             flex: 1;
-            width: 100%;
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            grid-template-rows: 1fr 300px;
+            gap: 1px;
+            background-color: #2a2e39;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar - Order Book & Recent Trades */
+        .left-sidebar {
+            background-color: #1a1d23;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Chart Area */
+        .chart-area {
+            background-color: #0b0e11;
+            position: relative;
+            grid-row: 1 / 3;
+        }
+
+        /* Right Sidebar - Trade Panel */
+        .right-sidebar {
+            background-color: #1a1d23;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Bottom Panel - Order Lists */
+        .bottom-panel {
+            background-color: #1a1d23;
+            grid-column: 1 / 3;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Order Book Styles */
+        .order-book {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .order-book-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a2e39;
+            font-size: 13px;
+            font-weight: 600;
+            color: #848e9c;
+        }
+
+        .order-book-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .order-book-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 3px 15px;
+            font-size: 12px;
+            cursor: pointer;
             position: relative;
         }
 
-        .loading {
+        .order-book-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .order-book-item.bid {
+            color: #0ecb81;
+        }
+
+        .order-book-item.ask {
+            color: #f6465d;
+        }
+
+        .order-book-item .price {
+            font-weight: 500;
+        }
+
+        .order-book-item .amount {
+            text-align: right;
+            color: #848e9c;
+        }
+
+        .order-book-depth-bar {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .order-book-depth-bar.bid {
+            background-color: #0ecb81;
+        }
+
+        .order-book-depth-bar.ask {
+            background-color: #f6465d;
+        }
+
+        /* Recent Trades */
+        .recent-trades {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #2a2e39;
+            overflow: hidden;
+        }
+
+        .recent-trades-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a2e39;
+            font-size: 13px;
+            font-weight: 600;
+            color: #848e9c;
+        }
+
+        .recent-trades-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .recent-trade-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 3px 15px;
+            font-size: 12px;
+        }
+
+        .recent-trade-item .price.up {
+            color: #0ecb81;
+        }
+
+        .recent-trade-item .price.down {
+            color: #f6465d;
+        }
+
+        .recent-trade-item .amount {
+            text-align: right;
+            color: #848e9c;
+        }
+
+        .recent-trade-item .time {
+            text-align: right;
+            color: #848e9c;
+            font-size: 11px;
+        }
+
+        /* Trade Panel */
+        .trade-panel {
+            padding: 15px;
+        }
+
+        .trade-panel-header {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #2a2e39;
+        }
+
+        .trade-tab {
+            padding: 10px 0;
+            cursor: pointer;
+            color: #848e9c;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+        }
+
+        .trade-tab.active {
+            color: #ffffff;
+            border-bottom-color: #0ecb81;
+        }
+
+        .trade-form-group {
+            margin-bottom: 15px;
+        }
+
+        .trade-form-label {
+            display: block;
+            font-size: 12px;
+            color: #848e9c;
+            margin-bottom: 6px;
+        }
+
+        .trade-input {
+            width: 100%;
+            background-color: #2b3139;
+            border: 1px solid #2a2e39;
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .trade-input:focus {
+            outline: none;
+            border-color: #0ecb81;
+        }
+
+        .trade-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .trade-button:hover {
+            opacity: 0.9;
+        }
+
+        .trade-button.buy {
+            background-color: #0ecb81;
+            color: #ffffff;
+        }
+
+        .trade-button.sell {
+            background-color: #f6465d;
+            color: #ffffff;
+        }
+
+        .trade-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Order Lists Panel */
+        .order-lists-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .order-lists-tabs {
+            display: flex;
+            gap: 20px;
+            padding: 12px 20px;
+            border-bottom: 1px solid #2a2e39;
+            background-color: #1a1d23;
+        }
+
+        .order-list-tab {
+            padding: 8px 0;
+            cursor: pointer;
+            color: #848e9c;
+            font-size: 13px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .order-list-tab.active {
+            color: #ffffff;
+            border-bottom-color: #0ecb81;
+        }
+
+        .order-list-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .order-table {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .order-table thead {
+            position: sticky;
+            top: 0;
+            background-color: #1a1d23;
+            z-index: 1;
+        }
+
+        .order-table th {
+            padding: 10px 15px;
+            text-align: left;
+            font-weight: 500;
+            color: #848e9c;
+            border-bottom: 1px solid #2a2e39;
+        }
+
+        .order-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #2a2e39;
+        }
+
+        .order-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #848e9c;
+            font-size: 13px;
+        }
+
+        .text-green {
+            color: #0ecb81;
+        }
+
+        .text-red {
+            color: #f6465d;
+        }
+
+        .text-gray {
+            color: #848e9c;
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1d23;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2a2e39;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3e49;
+        }
+
+        .loading-indicator {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 18px;
+            font-size: 14px;
             color: #848e9c;
         }
 
-        .footer {
-            background-color: #1a1d23;
-            padding: 10px 20px;
-            border-top: 1px solid #2a2e39;
-            text-align: center;
+        .leverage-info {
+            background-color: #2b3139;
+            padding: 8px 12px;
+            border-radius: 4px;
             font-size: 12px;
-            color: #848e9c;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="main-container">
+        <!-- Header -->
         <div class="header">
             <div class="header-left">
                 <div class="pair-info">
@@ -121,11 +467,80 @@
                 </div>
             </div>
         </div>
-        <div id="tradingview_chart">
-            <div class="loading" id="loadingIndicator">Loading chart...</div>
-        </div>
-        <div class="footer">
-            Static TradingView Chart for BTC-USDT Swap | Note: This file must be served from a web server to fetch live data from Binance API
+
+        <!-- Main Trading Layout -->
+        <div class="trading-layout">
+            <!-- Left Sidebar: Order Book & Recent Trades -->
+            <div class="left-sidebar">
+                <!-- Order Book -->
+                <div class="order-book">
+                    <div class="order-book-header">Order Book</div>
+                    <div class="order-book-list" id="orderBookList"></div>
+                </div>
+
+                <!-- Recent Trades -->
+                <div class="recent-trades">
+                    <div class="recent-trades-header">Recent Trades</div>
+                    <div class="recent-trades-list" id="recentTradesList"></div>
+                </div>
+            </div>
+
+            <!-- Chart Area -->
+            <div class="chart-area">
+                <div id="tradingview_chart" style="width: 100%; height: 100%;">
+                    <div class="loading-indicator" id="loadingIndicator">Loading chart...</div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Trade Panel -->
+            <div class="right-sidebar">
+                <div class="trade-panel">
+                    <div class="trade-panel-header">
+                        <div class="trade-tab active" data-side="buy">Long</div>
+                        <div class="trade-tab" data-side="sell">Short</div>
+                    </div>
+
+                    <div class="leverage-info">
+                        <span>Leverage</span>
+                        <span id="leverageValue">20x</span>
+                    </div>
+
+                    <div class="trade-form-group">
+                        <label class="trade-form-label">Price (USDT)</label>
+                        <input type="text" class="trade-input" id="orderPrice" placeholder="Market Price">
+                    </div>
+
+                    <div class="trade-form-group">
+                        <label class="trade-form-label">Amount (BTC)</label>
+                        <input type="text" class="trade-input" id="orderAmount" placeholder="0.00">
+                    </div>
+
+                    <div class="trade-form-group">
+                        <label class="trade-form-label">Total (USDT)</label>
+                        <input type="text" class="trade-input" id="orderTotal" placeholder="0.00" readonly>
+                    </div>
+
+                    <div class="trade-buttons">
+                        <button class="trade-button buy" id="buyButton">Buy/Long</button>
+                        <button class="trade-button sell" id="sellButton">Sell/Short</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Panel: Order Lists -->
+            <div class="bottom-panel">
+                <div class="order-lists-panel">
+                    <div class="order-lists-tabs">
+                        <div class="order-list-tab active" data-tab="positions">Positions</div>
+                        <div class="order-list-tab" data-tab="pending">Open Orders</div>
+                        <div class="order-list-tab" data-tab="history">Order History</div>
+                        <div class="order-list-tab" data-tab="trade-history">Trade History</div>
+                        <div class="order-list-tab" data-tab="position-history">Position History</div>
+                        <div class="order-list-tab" data-tab="funds">Transaction History</div>
+                    </div>
+                    <div class="order-list-content" id="orderListContent"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -133,10 +548,23 @@
     <script type="text/javascript" src="./tradingView/charting_library/charting_library.standalone.js"></script>
     
     <script type="text/javascript">
-        // Configuration for datafeed - Direct Binance API (works when hosted on a server)
+        // Configuration
         const API_BASE_URL = 'https://api.binance.com/api/v3';
-        
-        // Simple datafeed implementation for Binance
+        let currentPrice = 0;
+        let currentOrderBookData = { bids: [], asks: [] };
+        let currentRecentTrades = [];
+
+        // Data structures for orders
+        const mockData = {
+            positions: [],
+            pendingOrders: [],
+            orderHistory: [],
+            tradeHistory: [],
+            positionHistory: [],
+            funds: []
+        };
+
+        // TradingView Datafeed
         const Datafeed = {
             onReady: (callback) => {
                 setTimeout(() => callback({
@@ -148,7 +576,6 @@
             },
 
             searchSymbols: (userInput, exchange, symbolType, onResultReadyCallback) => {
-                // Not implemented for static page
                 onResultReadyCallback([]);
             },
 
@@ -178,7 +605,6 @@
                 try {
                     const { from, to, firstDataRequest } = periodParams;
                     
-                    // Convert resolution to Binance interval
                     const intervalMap = {
                         '1': '1m',
                         '3': '3m',
@@ -212,7 +638,6 @@
                         volume: parseFloat(kline[5])
                     }));
 
-                    // Update current price display
                     if (bars.length > 0) {
                         const lastBar = bars[bars.length - 1];
                         updatePriceDisplay(lastBar.close, bars[0].close);
@@ -221,15 +646,11 @@
                     onHistoryCallback(bars, { noData: false });
                 } catch (error) {
                     console.error('Error fetching bars:', error);
-                    // If direct API fails, we can use the error callback
                     onErrorCallback(error);
                 }
             },
 
             subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-                console.log('Subscribe bars:', subscriberUID);
-                
-                // Implement WebSocket connection to Binance for real-time updates
                 const intervalMap = {
                     '1': '1m',
                     '3': '3m',
@@ -261,6 +682,7 @@
                         };
                         
                         onRealtimeCallback(bar);
+                        currentPrice = bar.close;
                         updatePriceDisplay(bar.close, bar.open);
                     }
                 };
@@ -269,12 +691,10 @@
                     console.error('WebSocket error:', error);
                 };
                 
-                // Store WebSocket for cleanup
                 window._wsConnection = ws;
             },
 
             unsubscribeBars: (subscriberUID) => {
-                console.log('Unsubscribe bars:', subscriberUID);
                 if (window._wsConnection) {
                     window._wsConnection.close();
                     window._wsConnection = null;
@@ -306,7 +726,7 @@
                 autosize: true,
                 theme: 'dark',
                 style: '1',
-                toolbar_bg: '#1a1d23',
+                toolbar_bg: '#0b0e11',
                 overrides: {
                     'paneProperties.background': '#0b0e11',
                     'paneProperties.backgroundType': 'solid',
@@ -331,15 +751,16 @@
             return widget;
         }
 
-        function updatePriceDisplay(currentPrice, openPrice) {
+        // Update price display
+        function updatePriceDisplay(current, previous) {
             const priceElement = document.getElementById('currentPrice');
             const changeElement = document.getElementById('priceChange');
             
             if (priceElement && changeElement) {
-                priceElement.textContent = currentPrice.toFixed(2);
+                priceElement.textContent = current.toFixed(2);
                 
-                const change = currentPrice - openPrice;
-                const changePercent = ((change / openPrice) * 100).toFixed(2);
+                const change = current - previous;
+                const changePercent = ((change / previous) * 100).toFixed(2);
                 
                 if (change >= 0) {
                     priceElement.style.color = '#0ecb81';
@@ -355,11 +776,389 @@
             }
         }
 
-        // Initialize when DOM is loaded
+        // Fetch and display order book
+        async function fetchOrderBook() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/depth?symbol=BTCUSDT&limit=20`);
+                const data = await response.json();
+                
+                currentOrderBookData = {
+                    bids: data.bids.map(([price, amount]) => ({ price: parseFloat(price), amount: parseFloat(amount) })),
+                    asks: data.asks.map(([price, amount]) => ({ price: parseFloat(price), amount: parseFloat(amount) }))
+                };
+                
+                renderOrderBook();
+            } catch (error) {
+                console.error('Error fetching order book:', error);
+            }
+        }
+
+        function renderOrderBook() {
+            const container = document.getElementById('orderBookList');
+            if (!container) return;
+
+            let html = '';
+            
+            // Render asks (sell orders) - reversed to show highest price first
+            const asks = [...currentOrderBookData.asks].reverse().slice(0, 10);
+            asks.forEach(order => {
+                html += `
+                    <div class="order-book-item ask">
+                        <span class="price">${order.price.toFixed(2)}</span>
+                        <span class="amount">${order.amount.toFixed(4)}</span>
+                        <div class="order-book-depth-bar ask" style="width: ${(order.amount / Math.max(...currentOrderBookData.asks.map(o => o.amount))) * 100}%"></div>
+                    </div>
+                `;
+            });
+
+            // Render bids (buy orders)
+            const bids = currentOrderBookData.bids.slice(0, 10);
+            bids.forEach(order => {
+                html += `
+                    <div class="order-book-item bid">
+                        <span class="price">${order.price.toFixed(2)}</span>
+                        <span class="amount">${order.amount.toFixed(4)}</span>
+                        <div class="order-book-depth-bar bid" style="width: ${(order.amount / Math.max(...currentOrderBookData.bids.map(o => o.amount))) * 100}%"></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Fetch and display recent trades
+        async function fetchRecentTrades() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/trades?symbol=BTCUSDT&limit=50`);
+                const data = await response.json();
+                
+                currentRecentTrades = data.map(trade => ({
+                    price: parseFloat(trade.price),
+                    amount: parseFloat(trade.qty),
+                    time: new Date(trade.time),
+                    isBuyerMaker: trade.isBuyerMaker
+                }));
+                
+                renderRecentTrades();
+            } catch (error) {
+                console.error('Error fetching recent trades:', error);
+            }
+        }
+
+        function renderRecentTrades() {
+            const container = document.getElementById('recentTradesList');
+            if (!container) return;
+
+            let html = '';
+            
+            currentRecentTrades.slice(0, 30).forEach(trade => {
+                const priceClass = trade.isBuyerMaker ? 'down' : 'up';
+                const timeStr = trade.time.toLocaleTimeString('en-US', { hour12: false });
+                
+                html += `
+                    <div class="recent-trade-item">
+                        <span class="price ${priceClass}">${trade.price.toFixed(2)}</span>
+                        <span class="amount">${trade.amount.toFixed(4)}</span>
+                        <span class="time">${timeStr}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // WebSocket for real-time order book and trades
+        function connectMarketDataWebSockets() {
+            // Order book WebSocket
+            const depthWs = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth20@100ms');
+            depthWs.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                currentOrderBookData = {
+                    bids: data.bids.map(([price, amount]) => ({ price: parseFloat(price), amount: parseFloat(amount) })),
+                    asks: data.asks.map(([price, amount]) => ({ price: parseFloat(price), amount: parseFloat(amount) }))
+                };
+                renderOrderBook();
+            };
+
+            // Recent trades WebSocket
+            const tradesWs = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+            tradesWs.onmessage = (event) => {
+                const trade = JSON.parse(event.data);
+                const newTrade = {
+                    price: parseFloat(trade.p),
+                    amount: parseFloat(trade.q),
+                    time: new Date(trade.T),
+                    isBuyerMaker: trade.m
+                };
+                
+                currentRecentTrades.unshift(newTrade);
+                currentRecentTrades = currentRecentTrades.slice(0, 50);
+                renderRecentTrades();
+            };
+        }
+
+        // Order List Management
+        const orderListTabs = document.querySelectorAll('.order-list-tab');
+        let activeOrderListTab = 'positions';
+
+        orderListTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                orderListTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                activeOrderListTab = tab.dataset.tab;
+                renderOrderList();
+            });
+        });
+
+        function renderOrderList() {
+            const container = document.getElementById('orderListContent');
+            if (!container) return;
+
+            let html = '';
+
+            switch(activeOrderListTab) {
+                case 'positions':
+                    html = renderPositions();
+                    break;
+                case 'pending':
+                    html = renderPendingOrders();
+                    break;
+                case 'history':
+                    html = renderOrderHistory();
+                    break;
+                case 'trade-history':
+                    html = renderTradeHistory();
+                    break;
+                case 'position-history':
+                    html = renderPositionHistory();
+                    break;
+                case 'funds':
+                    html = renderFunds();
+                    break;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderPositions() {
+            if (mockData.positions.length === 0) {
+                return '<div class="empty-state">No open positions</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Symbol</th><th>Size</th><th>Entry Price</th><th>Mark Price</th><th>Liq. Price</th><th>Margin</th><th>PNL</th><th>Actions</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.positions.forEach(position => {
+                const pnlClass = position.pnl >= 0 ? 'text-green' : 'text-red';
+                html += `<tr>
+                    <td><span class="${position.side === 'LONG' ? 'text-green' : 'text-red'}">${position.symbol}</span></td>
+                    <td>${position.size}</td>
+                    <td>${position.entryPrice}</td>
+                    <td>${position.markPrice}</td>
+                    <td>${position.liqPrice}</td>
+                    <td>${position.margin}</td>
+                    <td class="${pnlClass}">${position.pnl}</td>
+                    <td><button class="trade-button" style="padding: 4px 8px; font-size: 11px;">Close</button></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function renderPendingOrders() {
+            if (mockData.pendingOrders.length === 0) {
+                return '<div class="empty-state">No pending orders</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Time</th><th>Symbol</th><th>Type</th><th>Side</th><th>Price</th><th>Amount</th><th>Filled</th><th>Total</th><th>Actions</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.pendingOrders.forEach(order => {
+                const sideClass = order.side === 'BUY' ? 'text-green' : 'text-red';
+                html += `<tr>
+                    <td>${order.time}</td>
+                    <td>${order.symbol}</td>
+                    <td>${order.type}</td>
+                    <td class="${sideClass}">${order.side}</td>
+                    <td>${order.price}</td>
+                    <td>${order.amount}</td>
+                    <td>${order.filled}</td>
+                    <td>${order.total}</td>
+                    <td><button class="trade-button" style="padding: 4px 8px; font-size: 11px; background-color: #f6465d;">Cancel</button></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function renderOrderHistory() {
+            if (mockData.orderHistory.length === 0) {
+                return '<div class="empty-state">No order history</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Time</th><th>Symbol</th><th>Type</th><th>Side</th><th>Price</th><th>Amount</th><th>Filled</th><th>Status</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.orderHistory.forEach(order => {
+                const sideClass = order.side === 'BUY' ? 'text-green' : 'text-red';
+                html += `<tr>
+                    <td>${order.time}</td>
+                    <td>${order.symbol}</td>
+                    <td>${order.type}</td>
+                    <td class="${sideClass}">${order.side}</td>
+                    <td>${order.price}</td>
+                    <td>${order.amount}</td>
+                    <td>${order.filled}</td>
+                    <td class="text-gray">${order.status}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function renderTradeHistory() {
+            if (mockData.tradeHistory.length === 0) {
+                return '<div class="empty-state">No trade history</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Time</th><th>Symbol</th><th>Side</th><th>Price</th><th>Amount</th><th>Fee</th><th>Realized PNL</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.tradeHistory.forEach(trade => {
+                const sideClass = trade.side === 'BUY' ? 'text-green' : 'text-red';
+                const pnlClass = trade.pnl >= 0 ? 'text-green' : 'text-red';
+                html += `<tr>
+                    <td>${trade.time}</td>
+                    <td>${trade.symbol}</td>
+                    <td class="${sideClass}">${trade.side}</td>
+                    <td>${trade.price}</td>
+                    <td>${trade.amount}</td>
+                    <td>${trade.fee}</td>
+                    <td class="${pnlClass}">${trade.pnl}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function renderPositionHistory() {
+            if (mockData.positionHistory.length === 0) {
+                return '<div class="empty-state">No position history</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Symbol</th><th>Side</th><th>Entry Time</th><th>Close Time</th><th>Entry Price</th><th>Close Price</th><th>PNL</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.positionHistory.forEach(position => {
+                const sideClass = position.side === 'LONG' ? 'text-green' : 'text-red';
+                const pnlClass = position.pnl >= 0 ? 'text-green' : 'text-red';
+                html += `<tr>
+                    <td>${position.symbol}</td>
+                    <td class="${sideClass}">${position.side}</td>
+                    <td>${position.entryTime}</td>
+                    <td>${position.closeTime}</td>
+                    <td>${position.entryPrice}</td>
+                    <td>${position.closePrice}</td>
+                    <td class="${pnlClass}">${position.pnl}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function renderFunds() {
+            if (mockData.funds.length === 0) {
+                return '<div class="empty-state">No transaction history</div>';
+            }
+
+            let html = '<table class="order-table"><thead><tr>';
+            html += '<th>Time</th><th>Type</th><th>Amount</th><th>Asset</th><th>Status</th>';
+            html += '</tr></thead><tbody>';
+
+            mockData.funds.forEach(fund => {
+                html += `<tr>
+                    <td>${fund.time}</td>
+                    <td>${fund.type}</td>
+                    <td>${fund.amount}</td>
+                    <td>${fund.asset}</td>
+                    <td class="text-gray">${fund.status}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // Trade Panel Functionality
+        const tradeTabs = document.querySelectorAll('.trade-tab');
+        const buyButton = document.getElementById('buyButton');
+        const sellButton = document.getElementById('sellButton');
+        const orderPriceInput = document.getElementById('orderPrice');
+        const orderAmountInput = document.getElementById('orderAmount');
+        const orderTotalInput = document.getElementById('orderTotal');
+
+        tradeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tradeTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Calculate total when price or amount changes
+        [orderPriceInput, orderAmountInput].forEach(input => {
+            input.addEventListener('input', () => {
+                const price = parseFloat(orderPriceInput.value) || currentPrice || 0;
+                const amount = parseFloat(orderAmountInput.value) || 0;
+                orderTotalInput.value = (price * amount).toFixed(2);
+            });
+        });
+
+        // Mock order placement
+        function placeOrder(side) {
+            const price = parseFloat(orderPriceInput.value) || currentPrice;
+            const amount = parseFloat(orderAmountInput.value);
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            alert(`${side} order placed:\nPrice: ${price.toFixed(2)} USDT\nAmount: ${amount} BTC\nTotal: ${(price * amount).toFixed(2)} USDT`);
+            
+            // Clear inputs
+            orderAmountInput.value = '';
+            orderTotalInput.value = '';
+        }
+
+        buyButton.addEventListener('click', () => placeOrder('BUY'));
+        sellButton.addEventListener('click', () => placeOrder('SELL'));
+
+        // Initialize everything
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initTradingView);
+            document.addEventListener('DOMContentLoaded', init);
         } else {
+            init();
+        }
+
+        function init() {
             initTradingView();
+            fetchOrderBook();
+            fetchRecentTrades();
+            connectMarketDataWebSockets();
+            renderOrderList();
+
+            // Refresh order book periodically as fallback
+            setInterval(fetchOrderBook, 5000);
         }
 
         // Cleanup on page unload
